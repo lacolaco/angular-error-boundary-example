@@ -45,8 +45,10 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
   - `chart-data.service.ts` holds the datasets (`valid`, `broken`, `unsupported`) and the signal that selects one.
-  - `chart-errors.ts` defines `UnsupportedChartDataError`.
+  - `chart-errors.ts` defines `UnsupportedChartDataError`. No page uses it at the moment.
+  - `auth.ts` defines `UnauthenticatedError` and `AuthService`. `requireUser()` throws `UnauthenticatedError` when no user is signed in. The error is an app-wide contract, so components never create it themselves and pages may tell it apart.
   - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The root component renders it below the routed page, so it stays outside every boundary and usable while the error content is shown.
   - `hide-on-error/banner-config-switcher.ts` (`<app-banner-config-switcher />`) switches the remote config of the campaign banner (`valid` or `broken`). The root component renders it after the dataset switcher, for the same reason.
   - `retry/chart-settings-switcher.ts` (`<app-chart-settings-switcher />`) switches the saved chart settings (`default` or `broken`). The root component renders it after the banner config switcher, for the same reason.
+  - `error-types/session-switcher.ts` (`<app-session-switcher />`) switches the session (`signed-in`, `signed-out`, or `corrupted`). The root component renders it after the chart settings switcher, for the same reason.
   - `navigation.ts` (`<app-navigation />`) lists the links to the use cases. When you add a use case, add a link to its `LINKS` array.

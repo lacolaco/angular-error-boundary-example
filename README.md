@@ -12,20 +12,22 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
 
 ## Read these first
 
-- `src/app/chart.ts`: `<app-chart />` takes no inputs. It reads the current dataset from `ChartDataService` and throws while the template is rendered when the data is not drawable. This is the component that most use cases put inside a boundary; the retry page has its own chart.
+- `src/app/chart.ts`: `<app-chart />` takes no inputs. It reads the current dataset from `ChartDataService` and throws while the template is rendered when the data is not drawable. This is the component that most use cases put inside a boundary; the retry page and the error-types page have their own components.
 - `src/app/chart-data.service.ts`: holds three datasets and the signal that selects one.
   - `valid`: four bars are drawn.
   - `broken`: `values` is `null`, so the chart throws a `TypeError`.
   - `unsupported`: the format is `radar`, so the chart throws an `UnsupportedChartDataError`.
-- `src/app/chart-errors.ts`: defines `UnsupportedChartDataError`.
+- `src/app/chart-errors.ts`: defines `UnsupportedChartDataError`. No page uses it any more; it remains for the shared chart.
+- `src/app/auth.ts`: defines `UnauthenticatedError` and `AuthService`, which holds the session and throws `UnauthenticatedError` from `requireUser()` when nobody is signed in. Used by the error-types page.
 - `src/app/dataset-switcher.ts`: the buttons that switch the dataset. The root component (`src/app/app.ts`) renders it below `<router-outlet />`, so it stays outside every boundary and usable while the `@error` content is shown.
 - `src/app/hide-on-error/banner-config-switcher.ts`: the buttons that switch the remote config of the campaign banner, used only by the hide-on-error page. The root component renders it right after the dataset switcher.
 - `src/app/retry/chart-settings-switcher.ts`: the buttons that switch the saved chart settings (`default` or `broken`), used only by the retry page. The root component renders it after the banner config switcher.
+- `src/app/error-types/session-switcher.ts`: the buttons that switch the session (`signed-in`, `signed-out`, or `corrupted`), used only by the error-types page. The root component renders it after the chart settings switcher.
 - `src/app/app.config.ts`: nothing is configured for Error Boundary. `@boundary` and `@error` work in a plain application.
 
 ## Tour
 
-Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the retry page has a chart that reads saved settings (`<app-series-chart />`); the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
+Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the retry page has a chart that reads saved settings (`<app-series-chart />`); the error-types page has an account summary (`<app-account-summary />`); the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
 
 ### 1. Showing a fallback
 
@@ -57,11 +59,12 @@ Every use case page puts `<app-navigation />` and `@boundary` blocks around the 
 ### 4. Choosing the fallback by the error
 
 - Open: `/error-types`
-- Read: `src/app/error-types/`
-- A boundary can have several `@error` blocks. `@error (let error; when isUnsupportedChartData(error))` binds the thrown error to `error` and shows its content only when the condition is true. The blocks are evaluated from top to bottom, and the last `@error` has no condition and catches everything else.
-- `isUnsupportedChartData` is a property of the component that checks `instanceof UnsupportedChartDataError`.
-- Press `unsupported`. The specific message appears, without a retry button, because trying again cannot help. Press `broken`. The `TypeError` does not match the condition, so the generic message and the `Try again` button appear.
-- The test checks which of the two messages is shown for each dataset, and that the unsupported message and the generic message are never shown together.
+- Read: `src/app/error-types/`, `src/app/auth.ts`
+- The page shows the account of the signed-in user. `AuthService` in `src/app/auth.ts` holds the session, and `account-summary.ts` calls `requireUser()` while it renders. When the session has ended in another tab, `requireUser()` throws `UnauthenticatedError`. `UnauthenticatedError` is defined by the authentication code and shared by the whole app, not an internal detail of one component, so a page may tell it apart.
+- A boundary can have several `@error` blocks. `@error (let error; when isUnauthenticated(error))` binds the thrown error to `error` and shows its content only when the condition is true. The blocks are evaluated from top to bottom, and the last `@error` has no condition and catches everything else.
+- `isUnauthenticated` is a property of the component that checks `instanceof UnauthenticatedError`.
+- Press `signed-out` in the `Session` group. The message that asks the user to sign in again appears. Press `corrupted`. The user object has lost its `plan`, so the component throws a `TypeError` (`Cannot read properties of undefined (reading 'toUpperCase')`). It does not match the condition, so the generic message appears. This also works when the account is already displayed and the session ends afterwards.
+- The test checks the user name and plan for `signed-in`, which of the two messages is shown for `signed-out` and `corrupted`, that the two messages are never shown together, and that ending the session after the first render shows the session message. `src/app/auth.spec.ts` checks `requireUser()`, and `session-switcher.spec.ts` checks that the buttons select the session.
 
 ### 5. Reporting the error with `onViewError`
 

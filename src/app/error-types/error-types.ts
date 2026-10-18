@@ -1,25 +1,24 @@
 import { Component } from '@angular/core';
-import { Chart } from '../chart';
-import { UnsupportedChartDataError } from '../chart-errors';
+import { UnauthenticatedError } from '../auth';
 import { Navigation } from '../navigation';
+import { AccountSummary } from './account-summary';
 
 @Component({
   selector: 'app-error-types',
-  imports: [Navigation, Chart],
+  imports: [Navigation, AccountSummary],
   template: `
     <main>
       <app-navigation />
       @boundary {
-        <app-chart />
-      } @error (let error; when isUnsupportedChartData(error)) {
-        <p>This data format is not supported. Select another dataset.</p>
+        <app-account-summary />
+      } @error (let error; when isUnauthenticated(error)) {
+        <p>Your session has ended. Sign in again to see your account.</p>
       } @error {
-        <p>The chart could not be displayed. Select another dataset, then try again.</p>
-        <button type="button" (click)="$reset()">Try again</button>
+        <p>Your account could not be displayed.</p>
       }
     </main>
   `,
 })
 export class ErrorTypes {
-  readonly isUnsupportedChartData = (error: unknown) => error instanceof UnsupportedChartDataError;
+  readonly isUnauthenticated = (error: unknown) => error instanceof UnauthenticatedError;
 }
