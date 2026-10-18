@@ -48,4 +48,5 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
   - `chart-errors.ts` defines `UnsupportedChartDataError`.
   - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The root component renders it below the routed page, so it stays outside every boundary and usable while the error content is shown.
   - `hide-on-error/banner-config-switcher.ts` (`<app-banner-config-switcher />`) switches the remote config of the campaign banner (`valid` or `broken`). The root component renders it after the dataset switcher, for the same reason.
+  - `retry/chart-settings-switcher.ts` (`<app-chart-settings-switcher />`) switches the saved chart settings (`default` or `broken`). The root component renders it after the banner config switcher, for the same reason.
   - `navigation.ts` (`<app-navigation />`) lists the links to the use cases. When you add a use case, add a link to its `LINKS` array.

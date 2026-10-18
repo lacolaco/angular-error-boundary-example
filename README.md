@@ -12,7 +12,7 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
 
 ## Read these first
 
-- `src/app/chart.ts`: `<app-chart />` takes no inputs. It reads the current dataset from `ChartDataService` and throws while the template is rendered when the data is not drawable. This is the component that every use case puts inside a boundary.
+- `src/app/chart.ts`: `<app-chart />` takes no inputs. It reads the current dataset from `ChartDataService` and throws while the template is rendered when the data is not drawable. This is the component that most use cases put inside a boundary; the retry page has its own chart.
 - `src/app/chart-data.service.ts`: holds three datasets and the signal that selects one.
   - `valid`: four bars are drawn.
   - `broken`: `values` is `null`, so the chart throws a `TypeError`.
@@ -20,11 +20,12 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
 - `src/app/chart-errors.ts`: defines `UnsupportedChartDataError`.
 - `src/app/dataset-switcher.ts`: the buttons that switch the dataset. The root component (`src/app/app.ts`) renders it below `<router-outlet />`, so it stays outside every boundary and usable while the `@error` content is shown.
 - `src/app/hide-on-error/banner-config-switcher.ts`: the buttons that switch the remote config of the campaign banner, used only by the hide-on-error page. The root component renders it right after the dataset switcher.
+- `src/app/retry/chart-settings-switcher.ts`: the buttons that switch the saved chart settings (`default` or `broken`), used only by the retry page. The root component renders it after the banner config switcher.
 - `src/app/app.config.ts`: nothing is configured for Error Boundary. `@boundary` and `@error` work in a plain application.
 
 ## Tour
 
-Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
+Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the retry page has a chart that reads saved settings (`<app-series-chart />`); the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
 
 ### 1. Showing a fallback
 
@@ -48,9 +49,10 @@ Every use case page puts `<app-navigation />` and `@boundary` blocks around the 
 
 - Open: `/retry`
 - Read: `src/app/retry/`
-- The `@error` block has a `Try again` button that calls `$reset()`. It clears the error state of the boundary and renders the boundary content again.
-- Press `broken`, then press `valid`. The page still shows the error: fixing the data does not clear the error state by itself. Now press `Try again` and the chart is rendered. Press `broken` and `Try again` instead, and the chart throws again, so the `@error` content comes back.
-- The test checks the three cases: the error stays after the dataset is fixed, `$reset()` renders the chart once the dataset is fixed, and `$reset()` ends up in the `@error` content again while the dataset is still broken.
+- The page shows a sales chart that draws the series saved in the user's chart settings. `ChartSettingsService` holds the saved settings, and `series-chart.ts` looks up each saved series. A setting that points to a series that no longer exists throws while the chart is rendered.
+- The `@error` block has a `Restore default settings` button. Its handler receives `$reset` as an argument, restores the default settings, and then calls `reset()`. `$reset()` only renders the boundary content again, so the cause of the error has to be removed before it is called. The page passes `$reset` to a method as a `() => void` function, which the template type check accepts.
+- Press `broken` in the `Chart settings` group. The chart is replaced with a message and the button. Press `default` and the page still shows the error: fixing the settings does not clear the error state by itself. Press `Restore default settings` and the chart is rendered. This also works when the chart is already displayed and the settings break afterwards.
+- The test checks that the chart is rendered for the `default` settings, that the `broken` settings show the message, the button and the navigation instead of the chart, that the button restores the default settings and renders the chart, and that the same recovery works when the settings break after the first render. `chart-settings-switcher.spec.ts` checks that the buttons select the settings.
 
 ### 4. Choosing the fallback by the error
 
