@@ -24,7 +24,7 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
 
 ## Tour
 
-Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner next to the chart; the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
+Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
 
 ### 1. Showing a fallback
 
@@ -39,10 +39,10 @@ Every use case page puts `<app-navigation />` and `@boundary` blocks around the 
 
 - Open: `/hide-on-error`
 - Read: `src/app/hide-on-error/`
-- The page shows a campaign banner above the chart. The banner is rendered from a remote config, as in an A/B test: `RemoteConfigService` holds the experiment and the variant, and `campaign-banner.ts` picks the heading and the text for the variant. An unknown variant throws while the banner is rendered. The banner is optional, so the boundary hides it instead of showing a fallback: its `@error` block is empty.
+- The page shows a campaign banner above the KPIs (the KPI widget from the fallback page). The banner is rendered from a remote config, as in an A/B test: `RemoteConfigService` holds the experiment and the variant, and `campaign-banner.ts` picks the heading and the text for the variant. An unknown variant throws while the banner is rendered. The banner is optional, so the boundary hides it instead of showing a fallback: its `@error` block is empty.
 - The `@error` block cannot be dropped. `@boundary { <app-campaign-banner /> }` compiles, but when the content throws there is no `@error` block to render, and Angular throws `Unhandled error in @boundary fell through.` instead of swallowing the error. An empty `@error {}` is how a boundary hides its content.
-- Press `broken` in the `Banner config` group. The banner disappears and nothing replaces it, while the chart and the navigation stay as they are. This also works when the banner is already displayed. Press `valid` afterwards and the banner stays hidden, because the error state of the boundary is kept until `$reset()` is called.
-- The test checks that the banner and the chart are rendered for the `valid` config, that for the `broken` config only the banner is missing and no error text appears, that switching to `broken` after the first render hides only the banner, and that switching back to `valid` does not bring the banner back. It also checks that a boundary without `@error` compiles and throws the fall-through error when its content throws.
+- Press `broken` in the `Banner config` group. The banner disappears and nothing replaces it, while the KPIs and the navigation stay as they are. This also works when the banner is already displayed. Press `valid` afterwards and the banner stays hidden, because the error state of the boundary is kept until `$reset()` is called.
+- The test checks that the banner and the KPIs are rendered for the `valid` config, that for the `broken` config only the banner is missing and no error text appears, that switching to `broken` after the first render hides only the banner, and that switching back to `valid` does not bring the banner back. It also checks that a boundary without `@error` compiles and throws the fall-through error when its content throws.
 
 ### 3. Retrying with `$reset()`
 

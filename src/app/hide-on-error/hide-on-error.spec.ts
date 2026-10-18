@@ -22,16 +22,16 @@ describe('Hide on error page', () => {
     expect(element.querySelector('app-campaign-banner')).toBeNull();
     expect(element.textContent).not.toContain('Spring sale');
     expect(element.textContent).not.toContain('Unknown variant');
-    expect(element.querySelectorAll('.bar')).toHaveLength(4);
+    expect(element.querySelector('app-kpi-summary')?.textContent).toContain('Revenue');
     expect(element.querySelector('nav')).not.toBeNull();
   }
 
-  it('renders the banner and the chart for the valid config', async () => {
+  it('renders the banner and the KPIs for the valid config', async () => {
     const harness = await navigate('valid');
     const element: HTMLElement = harness.routeNativeElement!;
 
     expect(element.querySelector('app-campaign-banner')?.textContent).toContain('Spring sale');
-    expect(element.querySelectorAll('.bar')).toHaveLength(4);
+    expect(element.querySelector('app-kpi-summary')?.textContent).toContain('Revenue');
     expect(element.querySelector('nav')).not.toBeNull();
   });
 
