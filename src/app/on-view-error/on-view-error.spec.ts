@@ -7,6 +7,7 @@ import { ChartDataService, DatasetName } from '../chart-data.service';
 import { UnsupportedChartDataError } from '../chart-errors';
 import { AppErrorHandler } from './app-error-handler';
 import { OnViewError } from './on-view-error';
+import { Sentry } from './sentry';
 import { routes } from '../app.routes';
 
 describe('onViewError use case', () => {
@@ -18,7 +19,7 @@ describe('onViewError use case', () => {
   }
 
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   it('provides AppErrorHandler through the route', async () => {
@@ -54,6 +55,20 @@ describe('onViewError use case', () => {
     expect(details.boundary?.type).toBe(OnViewError);
     expect(handleError).not.toHaveBeenCalled();
   });
+
+  it.each<DatasetName>(['broken', 'unsupported'])(
+    'sends the error to Sentry with the component and the boundary as tags for the %s dataset',
+    async (dataset) => {
+      const captureException = vi.spyOn(Sentry, 'captureException');
+      const harness = await renderPage(dataset);
+      harness.detectChanges();
+
+      expect(captureException).toHaveBeenCalledTimes(1);
+      expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
+        tags: { component: Chart.name, boundary: OnViewError.name },
+      });
+    },
+  );
 
   it.each<DatasetName>(['broken', 'unsupported'])(
     'shows the @error content for the %s dataset',

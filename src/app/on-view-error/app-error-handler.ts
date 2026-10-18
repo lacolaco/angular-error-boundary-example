@@ -1,13 +1,19 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import type { ErrorDetails } from '@angular/core';
+import { Sentry } from './sentry';
 
 @Injectable()
 export class AppErrorHandler implements ErrorHandler {
   handleError(error: unknown): void {
-    console.error(error);
+    Sentry.captureException(error);
   }
 
   onViewError(error: Error, details: ErrorDetails): void {
-    console.error('View error caught by a boundary', error, details);
+    Sentry.captureException(error, {
+      tags: {
+        component: details.declarationType.name,
+        boundary: details.boundary?.type.name ?? 'none',
+      },
+    });
   }
 }
