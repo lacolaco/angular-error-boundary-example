@@ -10,6 +10,7 @@ interface NavigationLink {
 const LINKS: NavigationLink[] = [
   { label: 'Fallback', path: '/fallback' },
   { label: 'Retry', path: '/retry' },
+  { label: 'Error types', path: '/error-types' },
 ];
 
 @Component({
