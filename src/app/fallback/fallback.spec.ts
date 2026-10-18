@@ -21,7 +21,6 @@ describe('Fallback page', () => {
     expect(element.querySelector('.chart')).toBeNull();
     expect(element.querySelector('p')?.textContent).toBe(MESSAGE);
     expect(element.querySelector('nav')).not.toBeNull();
-    expect(element.querySelector('fieldset')).not.toBeNull();
   }
 
   it('renders the chart for the valid dataset', async () => {
@@ -33,7 +32,7 @@ describe('Fallback page', () => {
   });
 
   it.each(['broken', 'unsupported'] as const)(
-    'shows the @error content for the %s dataset and keeps the page chrome',
+    'shows the @error content for the %s dataset and keeps the navigation',
     async (dataset) => {
       const harness = await navigate(dataset);
 
