@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
-import { DatasetSwitcher } from '../dataset-switcher';
 import { Chart } from '../chart';
 import { UnsupportedChartDataError } from '../chart-errors';
 import { Navigation } from '../navigation';
 
 @Component({
   selector: 'app-error-types',
-  imports: [Navigation, Chart, DatasetSwitcher],
+  imports: [Navigation, Chart],
   template: `
     <main>
       <app-navigation />
-      <app-dataset-switcher />
       @boundary {
         <app-chart />
       } @error (let error; when isUnsupportedChartData(error)) {
