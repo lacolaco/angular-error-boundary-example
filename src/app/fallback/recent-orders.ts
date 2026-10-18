@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-recent-orders',
   template: `
+    <h2>Recent orders</h2>
     <ul class="orders">
       @for (order of orders; track order.id) {
         <li>{{ order.id }}: {{ order.customer }}, {{ order.total }}</li>

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-kpi-summary',
   template: `
+    <h2>KPIs</h2>
     <dl class="kpis">
       @for (kpi of kpis; track kpi.label) {
         <div>
@@ -14,8 +15,19 @@ import { Component } from '@angular/core';
   `,
   styles: `
     .kpis {
-      display: flex;
-      gap: 2rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 0;
+    }
+    dt {
+      font-size: 0.85rem;
+      color: #57606a;
+    }
+    dd {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
     }
   `,
 })

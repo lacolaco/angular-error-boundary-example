@@ -5,6 +5,7 @@ import { UnsupportedChartDataError } from './chart-errors';
 @Component({
   selector: 'app-chart',
   template: `
+    <h2>Sales</h2>
     <div class="chart" role="img" aria-label="Bar chart">
       @for (bar of bars(); track $index) {
         <div class="bar" [style.height.%]="bar"></div>
@@ -19,7 +20,8 @@ import { UnsupportedChartDataError } from './chart-errors';
       height: 10rem;
     }
     .bar {
-      width: 2rem;
+      flex: 1;
+      max-width: 4rem;
       background: steelblue;
     }
   `,

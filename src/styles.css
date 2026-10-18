@@ -1,1 +1,92 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --border: #d0d7de;
+  --muted: #57606a;
+  --surface: #ffffff;
+  --background: #f6f8fa;
+  --error: #cf222e;
+}
+
+body {
+  margin: 0;
+  padding: 1.5rem;
+  background: var(--background);
+  color: #1f2328;
+  font-family: system-ui, sans-serif;
+}
+
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Each use case page is a grid of cards; the navigation spans the first row. */
+main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+main > app-navigation {
+  grid-column: 1 / -1;
+}
+
+/* Widgets and the @error content that replaces them are cards. */
+main > :not(app-navigation) {
+  display: block;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* The first widget (the chart) takes the left column across two rows. */
+main > :nth-child(2) {
+  grid-row: span 2;
+}
+
+main > p {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+nav ul {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  color: #0969da;
+}
+
+app-dataset-switcher {
+  display: block;
+  max-width: 960px;
+  margin: 1rem auto 0;
+}
+
+fieldset {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+button {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+button[aria-pressed='true'] {
+  border-color: #0969da;
+  background: #ddf4ff;
+}
