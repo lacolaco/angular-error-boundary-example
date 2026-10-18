@@ -7,12 +7,12 @@ import { ChartDataService, DatasetName } from '../chart-data.service';
 import { UnsupportedChartDataError } from '../chart-errors';
 import { AppErrorHandler } from './app-error-handler';
 import { OnViewError } from './on-view-error';
-import { routes } from './on-view-error.routes';
+import { routes } from '../app.routes';
 
 describe('onViewError use case', () => {
   async function renderPage(dataset: DatasetName) {
     TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
-    const harness = await RouterTestingHarness.create('/');
+    const harness = await RouterTestingHarness.create('/on-view-error');
     TestBed.inject(ChartDataService).select(dataset);
     return harness;
   }
