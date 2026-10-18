@@ -20,37 +20,41 @@ h2 {
   color: var(--muted);
 }
 
-/* Each use case page is a grid of cards; the navigation spans the first row. */
+/* Each use case page stacks its cards; the fallback dashboard lays them out in a grid. */
 main {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   max-width: 960px;
   margin: 0 auto;
 }
 
-main > app-navigation {
+main > button {
+  align-self: flex-start;
+}
+
+app-fallback main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+app-fallback main > app-navigation {
   grid-column: 1 / -1;
 }
 
+/* The sales chart takes the left column across two rows. */
+app-fallback main > :nth-child(2) {
+  grid-row: span 2;
+}
+
 /* Widgets and the @error content that replaces them are cards. */
-main > :not(app-navigation) {
+main > :is(app-chart, app-kpi-summary, app-recent-orders, p) {
   display: block;
   margin: 0;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
-}
-
-/* The first widget (the chart) takes the left column across two rows. */
-main > :nth-child(2) {
-  grid-row: span 2;
-}
-
-/* A page with a single widget uses the full width. */
-main > :nth-child(2):last-child {
-  grid-column: 1 / -1;
 }
 
 main > p {
