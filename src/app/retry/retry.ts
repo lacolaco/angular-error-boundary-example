@@ -11,7 +11,7 @@ import { Navigation } from '../navigation';
       @boundary {
         <app-chart />
       } @error {
-        <p>The chart could not be displayed.</p>
+        <p>The chart could not be displayed. Select another dataset, then try again.</p>
         <button type="button" (click)="$reset()">Try again</button>
       }
     </main>
