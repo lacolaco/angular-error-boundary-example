@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { ChartDataService, DatasetName } from '../chart-data.service';
-import { routes } from './fallback.routes';
+import { routes } from '../app.routes';
 
 const MESSAGE = 'The chart could not be displayed.';
 
 describe('Fallback page', () => {
   async function navigate(dataset: DatasetName) {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{ path: 'fallback', children: routes }])],
+      providers: [provideRouter(routes)],
     });
     TestBed.inject(ChartDataService).select(dataset);
     const harness = await RouterTestingHarness.create();

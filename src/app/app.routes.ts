@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  {
-    path: 'fallback',
-    loadChildren: () => import('./fallback/fallback.routes').then((m) => m.routes),
-  },
+  { path: 'fallback', loadComponent: () => import('./fallback/fallback').then((m) => m.Fallback) },
 ];
