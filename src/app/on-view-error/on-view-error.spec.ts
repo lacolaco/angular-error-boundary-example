@@ -65,7 +65,7 @@ describe('onViewError use case', () => {
 
       expect(captureException).toHaveBeenCalledTimes(1);
       expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
-        tags: { component: Chart.name, boundary: OnViewError.name },
+        tags: { component: 'app-chart', boundary: 'app-on-view-error' },
       });
     },
   );
