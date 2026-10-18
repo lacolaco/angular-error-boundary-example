@@ -11,6 +11,7 @@ const LINKS: NavigationLink[] = [
   { label: 'Fallback', path: '/fallback' },
   { label: 'Retry', path: '/retry' },
   { label: 'Error types', path: '/error-types' },
+  { label: 'onViewError', path: '/on-view-error' },
 ];
 
 @Component({
