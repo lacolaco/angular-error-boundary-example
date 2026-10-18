@@ -23,15 +23,16 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
 
 ## Tour
 
-Every use case page has the same shape: `<app-navigation />` and a `@boundary` block around `<app-chart />` inside `<main>`. Only the `@error` blocks and the error handling differ. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
+Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets; the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
 
 ### 1. Showing a fallback
 
 - Open: `/fallback`
 - Read: `src/app/fallback/`
-- `@boundary` wraps the chart, and `@error` holds the content that replaces the boundary content when something inside it throws. Nothing else is needed.
-- Press `broken` or `unsupported`. The chart is replaced with a message, while the navigation and the dataset switcher outside the boundary stay as they are. This also works when the chart is already displayed: the data breaks after the first render, the chart throws during change detection, and the boundary catches it.
-- The test checks that the chart is gone and the message is shown for both failing datasets, that the navigation is still rendered, and that switching from `valid` to `broken` after the first render ends up in the `@error` content.
+- The page is a dashboard of three widgets: the sales chart, the KPIs, and the recent orders. Each widget has its own `@boundary`, and `@error` holds the content that replaces that widget when something inside it throws. Nothing else is needed.
+- Only the sales chart reads the dataset, so it is the only widget that can break. `src/app/fallback/kpi-summary.ts` and `src/app/fallback/recent-orders.ts` show static data.
+- Press `broken` or `unsupported`. The sales chart is replaced with a message, while the KPIs, the recent orders, the navigation, and the dataset switcher stay as they are. The boundary keeps the rest of the screen usable. This also works when the chart is already displayed: the data breaks after the first render, the chart throws during change detection, and its boundary catches it.
+- The test checks that the sales chart is replaced with its message for both failing datasets while the KPIs, the recent orders, and the navigation are still rendered and neither of their messages appears, and that switching from `valid` to `broken` after the first render replaces only the sales chart.
 
 ### 2. Retrying with `$reset()`
 

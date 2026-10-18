@@ -4,7 +4,9 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { ChartDataService, DatasetName } from '../chart-data.service';
 import { routes } from '../app.routes';
 
-const MESSAGE = 'The chart could not be displayed.';
+const CHART_MESSAGE = 'The sales chart could not be displayed.';
+const KPI_MESSAGE = 'The KPIs could not be displayed.';
+const ORDERS_MESSAGE = 'The recent orders could not be displayed.';
 
 describe('Fallback page', () => {
   async function navigate(dataset: DatasetName) {
@@ -17,30 +19,39 @@ describe('Fallback page', () => {
     return harness;
   }
 
-  function expectErrorContent(element: HTMLElement) {
-    expect(element.querySelector('.chart')).toBeNull();
-    expect(element.querySelector('p')?.textContent).toBe(MESSAGE);
+  function expectOtherWidgetsIntact(element: HTMLElement) {
+    expect(element.querySelector('app-kpi-summary')?.textContent).toContain('Revenue');
+    expect(element.querySelector('app-recent-orders')?.textContent).toContain('#1042');
+    expect(element.textContent).not.toContain(KPI_MESSAGE);
+    expect(element.textContent).not.toContain(ORDERS_MESSAGE);
     expect(element.querySelector('nav')).not.toBeNull();
   }
 
-  it('renders the chart for the valid dataset', async () => {
+  function expectChartReplaced(element: HTMLElement) {
+    expect(element.querySelector('.chart')).toBeNull();
+    expect(element.textContent).toContain(CHART_MESSAGE);
+    expectOtherWidgetsIntact(element);
+  }
+
+  it('renders all three widgets for the valid dataset', async () => {
     const harness = await navigate('valid');
     const element: HTMLElement = harness.routeNativeElement!;
 
     expect(element.querySelectorAll('.bar')).toHaveLength(4);
-    expect(element.textContent).not.toContain(MESSAGE);
+    expectOtherWidgetsIntact(element);
+    expect(element.textContent).not.toContain(CHART_MESSAGE);
   });
 
   it.each(['broken', 'unsupported'] as const)(
-    'shows the @error content for the %s dataset and keeps the navigation',
+    'replaces only the sales chart for the %s dataset',
     async (dataset) => {
       const harness = await navigate(dataset);
 
-      expectErrorContent(harness.routeNativeElement!);
+      expectChartReplaced(harness.routeNativeElement!);
     },
   );
 
-  it('switches to the @error content when the data breaks after the chart is displayed', async () => {
+  it('replaces only the sales chart when the data breaks after it is displayed', async () => {
     const harness = await navigate('valid');
     const element: HTMLElement = harness.routeNativeElement!;
     expect(element.querySelector('.chart')).not.toBeNull();
@@ -48,6 +59,6 @@ describe('Fallback page', () => {
     TestBed.inject(ChartDataService).select('broken');
     harness.detectChanges();
 
-    expectErrorContent(element);
+    expectChartReplaced(element);
   });
 });
