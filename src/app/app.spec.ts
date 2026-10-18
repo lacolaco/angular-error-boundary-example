@@ -16,5 +16,8 @@ describe('App', () => {
     expect(
       element.querySelector('app-banner-config-switcher + app-chart-settings-switcher'),
     ).not.toBeNull();
+    expect(
+      element.querySelector('app-chart-settings-switcher + app-session-switcher'),
+    ).not.toBeNull();
   });
 });
