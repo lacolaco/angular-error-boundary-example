@@ -29,7 +29,8 @@ main {
   margin: 0 auto;
 }
 
-main > button {
+main > button,
+main > a {
   align-self: flex-start;
 }
 

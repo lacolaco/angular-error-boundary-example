@@ -28,6 +28,14 @@ describe('ErrorTypes', () => {
     expect(element.querySelector('.account')).toBeNull();
   });
 
+  it('links to sign-in for a signed-out session', async () => {
+    const { element } = await render('signed-out');
+
+    const link = element.querySelector<HTMLAnchorElement>('a[href^="/sign-in"]');
+    expect(link?.textContent).toContain('Sign in again');
+    expect(link?.getAttribute('href')).toBe('/sign-in');
+  });
+
   it('shows the generic message instead of the session one for a corrupted session', async () => {
     const { element } = await render('corrupted');
 

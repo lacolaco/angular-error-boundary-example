@@ -5,14 +5,15 @@ import { AccountSummary } from './account-summary';
 
 @Component({
   selector: 'app-error-types',
-  imports: [Navigation, AccountSummary],
+  imports: [AccountSummary, Navigation],
   template: `
     <main>
       <app-navigation />
       @boundary {
         <app-account-summary />
       } @error (let error; when isUnauthenticated(error)) {
-        <p>Your session has ended. Sign in again to see your account.</p>
+        <p>Your session has ended.</p>
+        <a href="/sign-in">Sign in again</a>
       } @error {
         <p>Your account could not be displayed.</p>
       }
