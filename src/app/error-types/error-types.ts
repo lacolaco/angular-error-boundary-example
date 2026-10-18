@@ -1,25 +1,27 @@
 import { Component } from '@angular/core';
-import { Chart } from '../chart';
-import { UnsupportedChartDataError } from '../chart-errors';
 import { Navigation } from '../navigation';
+import { EVENT } from './event';
+import { EventTime } from './event-time';
 
 @Component({
   selector: 'app-error-types',
-  imports: [Navigation, Chart],
+  imports: [Navigation, EventTime],
   template: `
     <main>
       <app-navigation />
       @boundary {
-        <app-chart />
-      } @error (let error; when isUnsupportedChartData(error)) {
-        <p>This data format is not supported. Select another dataset.</p>
+        <app-event-time />
+      } @error (let error; when isRangeError(error)) {
+        <p>
+          The time zone in your profile is invalid. Showing the time in UTC: {{ startsAtInUtc }}
+        </p>
       } @error {
-        <p>The chart could not be displayed. Select another dataset, then try again.</p>
-        <button type="button" (click)="$reset()">Try again</button>
+        <p>The event time could not be displayed.</p>
       }
     </main>
   `,
 })
 export class ErrorTypes {
-  readonly isUnsupportedChartData = (error: unknown) => error instanceof UnsupportedChartDataError;
+  readonly isRangeError = (error: unknown) => error instanceof RangeError;
+  readonly startsAtInUtc = EVENT.startsAt.toISOString();
 }

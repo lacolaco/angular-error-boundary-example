@@ -45,8 +45,9 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
   - `chart-data.service.ts` holds the datasets (`valid`, `broken`, `unsupported`) and the signal that selects one.
-  - `chart-errors.ts` defines `UnsupportedChartDataError`.
+  - `chart-errors.ts` defines `UnsupportedChartDataError`, which the chart throws for the `unsupported` dataset.
   - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The root component renders it below the routed page, so it stays outside every boundary and usable while the error content is shown.
   - `hide-on-error/banner-config-switcher.ts` (`<app-banner-config-switcher />`) switches the remote config of the campaign banner (`valid` or `broken`). The root component renders it after the dataset switcher, for the same reason.
   - `retry/chart-settings-switcher.ts` (`<app-chart-settings-switcher />`) switches the saved chart settings (`default` or `broken`). The root component renders it after the banner config switcher, for the same reason.
+  - `error-types/user-profile-switcher.ts` (`<app-user-profile-switcher />`) switches the user profile (`valid`, `invalid-time-zone`, or `missing-time-zone`). The root component renders it after the chart settings switcher, for the same reason.
   - `navigation.ts` (`<app-navigation />`) lists the links to the use cases. When you add a use case, add a link to its `LINKS` array.

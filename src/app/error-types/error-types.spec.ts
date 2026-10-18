@@ -1,38 +1,59 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { ChartDataService } from '../chart-data.service';
 import { ErrorTypes } from './error-types';
+import { ProfileName, UserProfileService } from './user-profile.service';
+
+const INVALID_MESSAGE = 'The time zone in your profile is invalid.';
+const GENERIC_MESSAGE = 'The event time could not be displayed.';
+const UTC_TIME = '2026-11-02T01:00:00.000Z';
 
 describe('ErrorTypes', () => {
-  async function render(dataset: Parameters<ChartDataService['select']>[0]) {
+  async function render(profile: ProfileName) {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
-    TestBed.inject(ChartDataService).select(dataset);
+    const service = TestBed.inject(UserProfileService);
+    service.select(profile);
     const fixture = TestBed.createComponent(ErrorTypes);
     await fixture.whenStable();
-    return fixture.nativeElement as HTMLElement;
+    return { element: fixture.nativeElement as HTMLElement, service, fixture };
   }
 
-  it('shows the unsupported format message instead of the generic one', async () => {
-    const element = await render('unsupported');
-
-    expect(element.textContent).toContain('This data format is not supported.');
-    expect(element.textContent).not.toContain('The chart could not be displayed.');
-    expect(element.querySelector('.chart')).toBeNull();
+  it('rejects the invalid time zone with a RangeError in this environment', () => {
+    expect(() => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC+9' })).toThrow(RangeError);
   });
 
-  it('shows the generic message and a Try again button for the broken dataset', async () => {
-    const element = await render('broken');
+  it('shows the start time in the time zone of the profile', async () => {
+    const { element } = await render('valid');
 
-    expect(element.textContent).toContain('The chart could not be displayed.');
-    expect(element.textContent).not.toContain('This data format is not supported.');
-    expect(element.textContent).toContain('Try again');
+    expect(element.textContent).toContain('Team meeting: Nov 2, 2026, 10:00');
+    expect(element.textContent).not.toContain(INVALID_MESSAGE);
+    expect(element.textContent).not.toContain(GENERIC_MESSAGE);
   });
 
-  it('shows the chart for the valid dataset', async () => {
-    const element = await render('valid');
+  it('shows the time in UTC for an invalid time zone', async () => {
+    const { element } = await render('invalid-time-zone');
 
-    expect(element.querySelectorAll('.bar')).toHaveLength(4);
-    expect(element.textContent).not.toContain('could not be displayed');
-    expect(element.textContent).not.toContain('not supported');
+    expect(element.textContent).toContain(INVALID_MESSAGE);
+    expect(element.textContent).toContain(UTC_TIME);
+    expect(element.textContent).not.toContain(GENERIC_MESSAGE);
+  });
+
+  it('shows the generic message when the profile is missing', async () => {
+    const { element } = await render('missing-time-zone');
+
+    expect(element.textContent).toContain(GENERIC_MESSAGE);
+    expect(element.textContent).not.toContain(INVALID_MESSAGE);
+    expect(element.textContent).not.toContain(UTC_TIME);
+  });
+
+  it('shows the time in UTC when the time zone becomes invalid after the first render', async () => {
+    const { element, service, fixture } = await render('valid');
+    expect(element.textContent).toContain('10:00');
+
+    service.select('invalid-time-zone');
+    await fixture.whenStable();
+
+    expect(element.textContent).toContain(INVALID_MESSAGE);
+    expect(element.textContent).toContain(UTC_TIME);
+    expect(element.textContent).not.toContain(GENERIC_MESSAGE);
   });
 });

@@ -17,15 +17,16 @@ npm test       # Vitest. Run once with: npx ng test --watch=false
   - `valid`: four bars are drawn.
   - `broken`: `values` is `null`, so the chart throws a `TypeError`.
   - `unsupported`: the format is `radar`, so the chart throws an `UnsupportedChartDataError`.
-- `src/app/chart-errors.ts`: defines `UnsupportedChartDataError`.
+- `src/app/chart-errors.ts`: defines `UnsupportedChartDataError`, which the chart throws for the `unsupported` dataset.
 - `src/app/dataset-switcher.ts`: the buttons that switch the dataset. The root component (`src/app/app.ts`) renders it below `<router-outlet />`, so it stays outside every boundary and usable while the `@error` content is shown.
 - `src/app/hide-on-error/banner-config-switcher.ts`: the buttons that switch the remote config of the campaign banner, used only by the hide-on-error page. The root component renders it right after the dataset switcher.
 - `src/app/retry/chart-settings-switcher.ts`: the buttons that switch the saved chart settings (`default` or `broken`), used only by the retry page. The root component renders it after the banner config switcher.
+- `src/app/error-types/user-profile-switcher.ts`: the buttons that switch the user profile (`valid`, `invalid-time-zone`, or `missing-time-zone`), used only by the error-types page. The root component renders it after the chart settings switcher.
 - `src/app/app.config.ts`: nothing is configured for Error Boundary. `@boundary` and `@error` work in a plain application.
 
 ## Tour
 
-Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the retry page has a chart that reads saved settings (`<app-series-chart />`); the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
+Every use case page puts `<app-navigation />` and `@boundary` blocks around the widgets inside `<main>`. The fallback page has three widgets and the hide-on-error page has a banner above the KPIs; the retry page has a chart that reads saved settings (`<app-series-chart />`); the error-types page shows an event time that reads the user profile (`<app-event-time />`); the other pages have only `<app-chart />` and differ in their `@error` blocks and error handling. In each use case, `*.ts` is the page and `*.spec.ts` checks the behavior. `src/app/app.routes.ts` loads every page with `loadComponent`.
 
 ### 1. Showing a fallback
 
@@ -58,10 +59,11 @@ Every use case page puts `<app-navigation />` and `@boundary` blocks around the 
 
 - Open: `/error-types`
 - Read: `src/app/error-types/`
-- A boundary can have several `@error` blocks. `@error (let error; when isUnsupportedChartData(error))` binds the thrown error to `error` and shows its content only when the condition is true. The blocks are evaluated from top to bottom, and the last `@error` has no condition and catches everything else.
-- `isUnsupportedChartData` is a property of the component that checks `instanceof UnsupportedChartDataError`.
-- Press `unsupported`. The specific message appears, without a retry button, because trying again cannot help. Press `broken`. The `TypeError` does not match the condition, so the generic message and the `Try again` button appear.
-- The test checks which of the two messages is shown for each dataset, and that the unsupported message and the generic message are never shown together.
+- The page shows the start time of an event in the time zone saved in the user's profile. `UserProfileService` holds the profile as it was received from the server, and `event-time.ts` passes its `timeZone` to `Intl.DateTimeFormat` without validating it. A name that is not an IANA time zone throws a `RangeError` while the component is rendered.
+- A boundary can have several `@error` blocks. `@error (let error; when isRangeError(error))` binds the thrown error to `error` and shows its content only when the condition is true. The blocks are evaluated from top to bottom, and the last `@error` has no condition and catches everything else.
+- `isRangeError` is a property of the component that checks `instanceof RangeError`. The matching block shows the start time in UTC, which `startsAtInUtc` takes from the constant in `src/app/error-types/event.ts`.
+- Press `invalid-time-zone` in the `User profile` group. The saved time zone is `UTC+9`, the display name of an option that the server stored as is. The invalid time zone message and the time in UTC appear. Press `missing-time-zone`. The server returned no profile, so reading `timeZone` throws a `TypeError`. It does not match the condition, so the generic message appears.
+- The test checks that the time is shown in `Asia/Tokyo` for `valid`, that the UTC message and time are shown without the generic message for `invalid-time-zone`, that the generic message is shown without the UTC message for `missing-time-zone`, and that switching from `valid` to `invalid-time-zone` after the first render shows the UTC message. It also checks that this environment throws a `RangeError` for `UTC+9`. `user-profile-switcher.spec.ts` checks that the buttons select the profile.
 
 ### 5. Reporting the error with `onViewError`
 
