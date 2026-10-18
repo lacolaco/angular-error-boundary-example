@@ -13,5 +13,8 @@ describe('App', () => {
     expect(
       element.querySelector('app-dataset-switcher + app-banner-config-switcher'),
     ).not.toBeNull();
+    expect(
+      element.querySelector('app-banner-config-switcher + app-chart-settings-switcher'),
+    ).not.toBeNull();
   });
 });
