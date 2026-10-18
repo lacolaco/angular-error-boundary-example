@@ -40,15 +40,16 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
 - `src/main.ts` bootstraps with `bootstrapApplication(App, appConfig)`.
 - `src/app/app.config.ts` provides the router and the global error listeners.
 - `src/app/app.routes.ts` loads each use case page with `loadComponent`. A use case has no routes file of its own; route-level providers go on its entry here.
-- The root component (`src/app/app.ts`) holds `<router-outlet />` and `<app-dataset-switcher />`. The template of each use case page is the article's code for that use case, character for character: `<app-navigation />` and the `@boundary` block live in the page, and anything the article does not show stays out of the page.
+- The root component (`src/app/app.ts`) holds `<router-outlet />` and renders the controls that the current route lists in `data.controls` (`app.routes.ts`) with `NgComponentOutlet`, so each page shows only the controls it uses. The template of each use case page is the article's code for that use case, character for character: `<app-navigation />` and the `@boundary` block live in the page, and anything the article does not show stays out of the page.
 - Each use case has its own directory under `src/app/` with its page component and `*.spec.ts` files that check the behavior.
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
   - `chart-data.service.ts` holds the datasets (`valid`, `broken`, `unsupported`) and the signal that selects one.
   - `chart-errors.ts` defines `UnsupportedChartDataError`. No page uses it at the moment.
   - `auth.ts` defines `UnauthenticatedError` and `AuthService`. `requireUser()` throws `UnauthenticatedError` when no user is signed in. The error is an app-wide contract, so components never create it themselves and pages may tell it apart.
-  - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The root component renders it below the routed page, so it stays outside every boundary and usable while the error content is shown.
-  - `hide-on-error/banner-config-switcher.ts` (`<app-banner-config-switcher />`) switches the remote config of the campaign banner (`valid` or `broken`). The root component renders it after the dataset switcher, for the same reason.
-  - `retry/chart-settings-switcher.ts` (`<app-chart-settings-switcher />`) switches the saved chart settings (`default` or `broken`). The root component renders it after the banner config switcher, for the same reason.
-  - `error-types/session-switcher.ts` (`<app-session-switcher />`) switches the session (`signed-in`, `signed-out`, or `corrupted`). The root component renders it after the chart settings switcher, for the same reason.
+  - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The fallback and on-view-error routes list it in `data.controls`, so the root component renders it below the routed page, outside every boundary, and it stays usable while the error content is shown.
+  - `hide-on-error/banner-config-switcher.ts` (`<app-banner-config-switcher />`) switches the remote config of the campaign banner (`valid` or `broken`). The hide-on-error route lists it in `data.controls`, for the same reason.
+  - `retry/chart-settings-switcher.ts` (`<app-chart-settings-switcher />`) switches the saved chart settings (`default` or `broken`). The retry route lists it in `data.controls`, for the same reason.
+  - `error-types/session-switcher.ts` (`<app-session-switcher />`) switches the session (`signed-in`, `signed-out`, or `corrupted`). The error-types route lists it in `data.controls`, for the same reason.
   - `navigation.ts` (`<app-navigation />`) lists the links to the use cases. When you add a use case, add a link to its `LINKS` array.
+- When you add a use case, also list the controls it needs in the `data.controls` of its route in `app.routes.ts`. Never put a control in the page.
