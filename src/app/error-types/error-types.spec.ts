@@ -5,7 +5,7 @@ import { ProfileName, UserProfileService } from './user-profile.service';
 
 const INVALID_MESSAGE = 'The time zone in your profile is invalid.';
 const GENERIC_MESSAGE = 'The event time could not be displayed.';
-const UTC_TIME = '2026-11-02T01:00:00.000Z';
+const UTC_TIME = 'Nov 2, 2026, 1:00 AM';
 
 describe('ErrorTypes', () => {
   async function render(profile: ProfileName) {
