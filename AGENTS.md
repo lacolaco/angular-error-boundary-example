@@ -39,12 +39,12 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
 
 - `src/main.ts` bootstraps with `bootstrapApplication(App, appConfig)`.
 - `src/app/app.config.ts` provides the router and the global error listeners.
-- `src/app/app.routes.ts` mounts each use case page.
-- The root component (`src/app/app.ts`) only holds `<router-outlet />` in its inline template. Each use case page renders `<app-navigation />` itself and puts the chart inside the boundary.
-- Each use case has its own directory under `src/app/` with its page component, its routes, and `*.spec.ts` files that check the behavior.
+- `src/app/app.routes.ts` loads each use case page with `loadComponent`. A use case has no routes file of its own; route-level providers go on its entry here.
+- The root component (`src/app/app.ts`) holds `<router-outlet />` and `<app-dataset-switcher />`. The template of each use case page is the article's code for that use case, character for character: `<app-navigation />` and the `@boundary` block live in the page, and anything the article does not show stays out of the page.
+- Each use case has its own directory under `src/app/` with its page component and `*.spec.ts` files that check the behavior.
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
   - `chart-data.service.ts` holds the datasets (`valid`, `broken`, `unsupported`) and the signal that selects one.
   - `chart-errors.ts` defines `UnsupportedChartDataError`.
-  - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. Place it outside the boundary so that it stays usable while the error content is shown.
+  - `dataset-switcher.ts` (`<app-dataset-switcher />`) switches the dataset. The root component renders it below the routed page, so it stays outside every boundary and usable while the error content is shown.
   - `navigation.ts` (`<app-navigation />`) lists the links to the use cases. When you add a use case, add a link to its `LINKS` array.
