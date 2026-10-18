@@ -7,7 +7,10 @@ interface NavigationLink {
 }
 
 // Add one entry per use case. Each use case page renders `<app-navigation />` itself.
-const LINKS: NavigationLink[] = [{ label: 'Retry', path: '/retry' }];
+const LINKS: NavigationLink[] = [
+  { label: 'Fallback', path: '/fallback' },
+  { label: 'Retry', path: '/retry' },
+];
 
 @Component({
   selector: 'app-navigation',
