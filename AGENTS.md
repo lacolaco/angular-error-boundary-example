@@ -35,12 +35,12 @@ No linter is configured.
 
 ## Structure
 
-The app uses standalone components only, with no NgModules, and runs zoneless.
+The app uses standalone components only, with no NgModules, and runs zoneless. Components keep their templates and styles inline (`template` / `styles`), not in separate files.
 
 - `src/main.ts` bootstraps with `bootstrapApplication(App, appConfig)`.
 - `src/app/app.config.ts` provides the router and the global error listeners.
 - `src/app/app.routes.ts` mounts each use case page.
-- `src/app/app.html` only holds `<router-outlet />`. Each use case page renders `<app-navigation />` itself and puts the chart inside the boundary.
+- The root component (`src/app/app.ts`) only holds `<router-outlet />` in its inline template. Each use case page renders `<app-navigation />` itself and puts the chart inside the boundary.
 - Each use case has its own directory under `src/app/` with its page component, its routes, and `*.spec.ts` files that check the behavior.
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
