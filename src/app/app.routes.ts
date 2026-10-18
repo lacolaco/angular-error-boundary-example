@@ -4,6 +4,10 @@ import { AppErrorHandler } from './on-view-error/app-error-handler';
 
 export const routes: Routes = [
   { path: 'fallback', loadComponent: () => import('./fallback/fallback').then((m) => m.Fallback) },
+  {
+    path: 'hide-on-error',
+    loadComponent: () => import('./hide-on-error/hide-on-error').then((m) => m.HideOnError),
+  },
   { path: 'retry', loadComponent: () => import('./retry/retry').then((m) => m.Retry) },
   {
     path: 'error-types',

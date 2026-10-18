@@ -48,13 +48,18 @@ app-fallback main > :nth-child(2) {
 }
 
 /* Widgets and the @error content that replaces them are cards. */
-main > :is(app-chart, app-kpi-summary, app-recent-orders, p) {
+main > :is(app-chart, app-kpi-summary, app-recent-orders, app-campaign-banner, p) {
   display: block;
   margin: 0;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
+}
+
+main > app-campaign-banner {
+  border-color: #d4a72c;
+  background: #fff8c5;
 }
 
 main > p {
@@ -74,7 +79,8 @@ nav a {
   color: #0969da;
 }
 
-app-dataset-switcher {
+app-dataset-switcher,
+app-banner-config-switcher {
   display: block;
   max-width: 960px;
   margin: 1rem auto 0;

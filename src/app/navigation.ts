@@ -9,6 +9,7 @@ interface NavigationLink {
 // Add one entry per use case. Each use case page renders `<app-navigation />` itself.
 const LINKS: NavigationLink[] = [
   { label: 'Fallback', path: '/fallback' },
+  { label: 'Hide on error', path: '/hide-on-error' },
   { label: 'Retry', path: '/retry' },
   { label: 'Error types', path: '/error-types' },
   { label: 'onViewError', path: '/on-view-error' },
