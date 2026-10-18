@@ -39,9 +39,9 @@ The app uses standalone components only, with no NgModules, and runs zoneless. C
 
 - `src/main.ts` bootstraps with `bootstrapApplication(App, appConfig)`.
 - `src/app/app.config.ts` provides the router and the global error listeners.
-- `src/app/app.routes.ts` mounts each use case page.
+- `src/app/app.routes.ts` loads each use case page with `loadComponent`. A use case has no routes file of its own; route-level providers go on its entry here.
 - The root component (`src/app/app.ts`) holds `<router-outlet />` and `<app-dataset-switcher />`. The template of each use case page is the article's code for that use case, character for character: `<app-navigation />` and the `@boundary` block live in the page, and anything the article does not show stays out of the page.
-- Each use case has its own directory under `src/app/` with its page component, its routes, and `*.spec.ts` files that check the behavior.
+- Each use case has its own directory under `src/app/` with its page component and `*.spec.ts` files that check the behavior.
 - The shared parts live directly under `src/app/`:
   - `chart.ts` (`<app-chart />`) takes no inputs. It reads the current dataset from `ChartDataService` and throws while rendering when the data is broken or unsupported.
   - `chart-data.service.ts` holds the datasets (`valid`, `broken`, `unsupported`) and the signal that selects one.
