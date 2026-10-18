@@ -1,20 +1,28 @@
-import { Component } from '@angular/core';
-import { Chart } from '../chart';
+import { Component, inject } from '@angular/core';
 import { Navigation } from '../navigation';
+import { ChartSettingsService } from './chart-settings.service';
+import { SeriesChart } from './series-chart';
 
 @Component({
   selector: 'app-retry',
-  imports: [Chart, Navigation],
+  imports: [Navigation, SeriesChart],
   template: `
     <main>
       <app-navigation />
       @boundary {
-        <app-chart />
+        <app-series-chart />
       } @error {
-        <p>The chart could not be displayed. Select another dataset, then try again.</p>
-        <button type="button" (click)="$reset()">Try again</button>
+        <p>The chart settings are invalid.</p>
+        <button type="button" (click)="restoreDefaults($reset)">Restore default settings</button>
       }
     </main>
   `,
 })
-export class Retry {}
+export class Retry {
+  private readonly chartSettings = inject(ChartSettingsService);
+
+  restoreDefaults(reset: () => void): void {
+    this.chartSettings.restoreDefaults();
+    reset();
+  }
+}
