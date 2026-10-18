@@ -62,6 +62,16 @@ describe('Retry', () => {
     expect(text()).not.toContain('The chart settings are invalid.');
   });
 
+  it('keeps the error content when the settings are fixed without the button', async () => {
+    await render('broken');
+
+    chartSettings.select('default');
+    await fixture.whenStable();
+
+    expect(hasChart()).toBe(false);
+    expect(text()).toContain('The chart settings are invalid.');
+  });
+
   it('shows the error content when the settings become broken after the first render', async () => {
     await render('default');
     expect(hasChart()).toBe(true);
