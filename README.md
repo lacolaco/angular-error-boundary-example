@@ -54,7 +54,7 @@ Every use case page has the same shape: `<app-navigation />` and a `@boundary` b
 
 - Open: `/on-view-error`
 - Read: `src/app/on-view-error/`
-- `app-error-handler.ts` implements `ErrorHandler` with `handleError` and also `onViewError(error, details)`. Both send the error to Sentry. `sentry.ts` is a stand-in for `@sentry/angular` that has the same `captureException` call shape but only logs. Its entry in `src/app/app.routes.ts` provides the handler in `providers`, so the other use cases keep the default `ErrorHandler`.
+- `app-error-handler.ts` implements `ErrorHandler` with `handleError` and also `onViewError(error, details)`. Both send the error to Sentry. `sentry.ts` is a stand-in for `@sentry/angular` that has the same `captureException` call shape but only logs. The `on-view-error` entry in `src/app/app.routes.ts` provides the handler in `providers`, so the other use cases keep the default `ErrorHandler`.
 - When a boundary catches an error and the `ErrorHandler` implements `onViewError`, Angular calls `onViewError` and does not call `handleError` for that error. The page itself is the same as the fallback page.
 - `onViewError` turns `ErrorDetails` into Sentry tags: `component` is the component that threw (`details.declarationType`, here `app-chart`), and `boundary` is the component that declares the `@boundary` (`details.boundary.type`, here `app-on-view-error`). The tags use the selector from `reflectComponentType` because production builds minify class names.
 - Open the browser console, then press `broken` or `unsupported`. `[Sentry] captureException` is logged once with the error and the tags.
